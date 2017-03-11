@@ -1,1 +1,1 @@
-# Tensorflow_inception_resnet_v2_demo
+# Tensorflow_inception_resnet_v2
