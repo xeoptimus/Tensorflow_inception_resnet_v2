@@ -41,7 +41,7 @@ all_labels = ops.convert_to_tensor(all_labels, dtype=dtypes.int32)
 
 # 创建自定义随机分片 
 partitions = [0] * len(all_filepaths)  
-partitions[:FLAGS.test_set_size] = [1] * FLAGS.test_set_size  
+partitions[:FLAGS.TEST_BATCH_SIZE] = [1] * FLAGS.TEST_BATCH_SIZE  
 random.shuffle(partitions)  
 
 train_images, test_images = tf.dynamic_partition(all_images, partitions, 2)  
@@ -79,12 +79,12 @@ test_image.set_shape([FLAGS.NET_IMAGE_SIZE_H, FLAGS.NET_IMAGE_SIZE_W, FLAGS.NET_
 # batches
 train_image_batch, train_label_batch = tf.train.batch(  
                                     [train_image, train_label],  
-                                    batch_size=FLAGS.BATCH_SIZE,  
+                                    batch_size=FLAGS.TRAIN_BATCH_SIZE,  
                                     num_threads=1 
                                     )  
 test_image_batch, test_label_batch = tf.train.batch(  
                                     [test_image, test_label],  
-                                    batch_size=FLAGS.test_set_size,  
+                                    batch_size=FLAGS.TEST_BATCH_SIZE,  
                                     num_threads=1  
                                     )  
 

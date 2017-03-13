@@ -6,11 +6,13 @@ flags = tf.app.flags
 FLAGS = flags.FLAGS
 
 # Flags train settings
-flags.DEFINE_integer('BATCH_SIZE', 8, 'the number of images in a batch.')
+flags.DEFINE_integer('TRAIN_BATCH_SIZE', 8, 'the number of train images in a batch.')
+flags.DEFINE_integer('TEST_BATCH_SIZE', 30, 'the number of test images in a batch.')
 flags.DEFINE_string('train_labels_file', '/train-labels.csv', 'path to csv file for training.')
 flags.DEFINE_string('test_labels_file', '/test-labels.csv', 'path to csv file for testing.')
 flags.DEFINE_string('dataset_path', 'D:/Dataset/Samples/', 'path to Dataset and csv.')
-flags.DEFINE_integer('test_set_size', 30, 'test size.')
+flags.DEFINE_string('tensorboard_log_path', 'D:/Dataset/log/', 'path to Dataset and csv.')
+
 tf.app.flags.DEFINE_string('checkpoint_path', 'D:/Dataset/checkpoint/model.ckpt', "Directory where to write event logs and checkpoint")
 tf.app.flags.DEFINE_integer('classes', 3, "Number of classes")
 tf.app.flags.DEFINE_integer('traintimes', 10000, "Number of batches to run.")

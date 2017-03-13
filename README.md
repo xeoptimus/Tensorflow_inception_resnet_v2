@@ -13,4 +13,3 @@ Inception resnet v2 implements by tensorflow and python3.5
 - python trainer.py
 
 # notes
-- save checkpoints for every 100 training steps

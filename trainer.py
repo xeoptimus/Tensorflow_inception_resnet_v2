@@ -24,9 +24,10 @@ def compute_accuracy(v_xs, v_ys):
 
 # tr_labels=tf.Variable(np.zeros([batch,num_classes]),dtype=tf.float32)
 # ts_labels=tf.Variable(np.zeros([batch,num_classes]),dtype=tf.float32)
+with tf.name_scope('inputs'):
+    xs_images=tf.placeholder(dtype=tf.float32,shape=[None , FLAGS.NET_IMAGE_SIZE_H , FLAGS.NET_IMAGE_SIZE_W , FLAGS.NET_IMAGE_SIZE_C])
+    ys_labels=tf.placeholder(dtype=tf.float32,shape=[None , FLAGS.classes])
 
-xs_images=tf.placeholder(dtype=tf.float32,shape=[None , FLAGS.NET_IMAGE_SIZE_H , FLAGS.NET_IMAGE_SIZE_W , FLAGS.NET_IMAGE_SIZE_C])
-ys_labels=tf.placeholder(dtype=tf.float32,shape=[None , FLAGS.classes])
 
 # inception resnet v2网络定义
 logits, _ = inception_resnet_v2.inception_resnet_v2(xs_images,
@@ -36,16 +37,21 @@ logits, _ = inception_resnet_v2.inception_resnet_v2(xs_images,
 probabilities = tf.nn.softmax(logits)
 
 # 定义交叉熵loss
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys_labels * tf.log(probabilities),
-                                              reduction_indices=[1]))       
-
-train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+with tf.name_scope('loss'):
+    cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys_labels * tf.log(probabilities),
+                                                  reduction_indices=[1]))       
+    tf.summary.scalar('loss', cross_entropy)
+    
+with tf.name_scope('train'):    
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
 saver=tf.train.Saver()
 
 with tf.Session() as sess:
     
+    merged=tf.summary.merge_all()
     sess.run(tf.global_variables_initializer())
+    writer=tf.summary.FileWriter(FLAGS.tensorboard_log_path,sess.graph)
     coord = tf.train.Coordinator()  
     threads = tf.train.start_queue_runners(coord=coord)  
     print("Network Starts to train")
@@ -57,11 +63,11 @@ with tf.Session() as sess:
                                               batchreader.batched_test_label()])
         
         # 对labels进行格式上的调整
-        tr_labels=np.zeros([FLAGS.BATCH_SIZE,FLAGS.classes])
-        ts_labels=np.zeros([FLAGS.test_set_size,FLAGS.classes])
-        for m in range(FLAGS.BATCH_SIZE):
+        tr_labels=np.zeros([FLAGS.TRAIN_BATCH_SIZE,FLAGS.classes])
+        ts_labels=np.zeros([FLAGS.TEST_BATCH_SIZE,FLAGS.classes])
+        for m in range(FLAGS.TRAIN_BATCH_SIZE):
             tr_labels[m][tr_lab[m]]=1
-        for n in range(FLAGS.test_set_size):
+        for n in range(FLAGS.TEST_BATCH_SIZE):
             ts_labels[n][ts_lab[n]]=1
         
         # 训练
@@ -70,11 +76,13 @@ with tf.Session() as sess:
         
         # 每10步输出正确率
         if step % 10 == 0:
-            print("After ",step," steps,","total accuracy is : ",compute_accuracy(
-                ts_img, ts_labels))
-
-
-        if step % 101 == 0:
+            print("After ",step," steps,","total accuracy is : ",compute_accuracy(ts_img, ts_labels))
+        
+        if step % 31 == 0:
+            result=sess.run(merged,feed_dict={xs_images:tr_img , ys_labels:tr_labels})
+            writer.add_summary(result, step)
+            
+        if step % 201 == 0:
             saver.save(sess, FLAGS.checkpoint_path,global_step=step)
         
     coord.request_stop()  
