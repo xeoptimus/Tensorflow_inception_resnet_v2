@@ -5,13 +5,18 @@ import sys
 sys.path.append("./slim")
 import tensorflow as tf
 import numpy as np
-import batchreader
 from matplotlib import pyplot as plt
 from nets import inception_resnet_v2
 import settings
+import imlab2csv
 
 FLAGS = settings.FLAGS
 slim=tf.contrib.slim
+# 创建文件列表&labels csv
+path = os.path.join(FLAGS.dataset_path +"*")
+imlab2csv.create_examples(path) 
+
+import batchreader
 
 # 计算分类正确率
 def compute_accuracy(v_xs, v_ys):
@@ -22,8 +27,6 @@ def compute_accuracy(v_xs, v_ys):
     result = sess.run(accuracy, feed_dict={xs_images: v_xs, ys_labels: v_ys})
     return result
 
-# tr_labels=tf.Variable(np.zeros([batch,num_classes]),dtype=tf.float32)
-# ts_labels=tf.Variable(np.zeros([batch,num_classes]),dtype=tf.float32)
 with tf.name_scope('inputs'):
     xs_images=tf.placeholder(dtype=tf.float32,shape=[None , FLAGS.NET_IMAGE_SIZE_H , FLAGS.NET_IMAGE_SIZE_W , FLAGS.NET_IMAGE_SIZE_C])
     ys_labels=tf.placeholder(dtype=tf.float32,shape=[None , FLAGS.classes])

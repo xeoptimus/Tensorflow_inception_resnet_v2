@@ -7,9 +7,11 @@ FLAGS = flags.FLAGS
 
 # Flags train settings
 flags.DEFINE_integer('TRAIN_BATCH_SIZE', 8, 'the number of train images in a batch.')
-flags.DEFINE_integer('TEST_BATCH_SIZE', 30, 'the number of test images in a batch.')
-flags.DEFINE_string('train_labels_file', '/train-labels.csv', 'path to csv file for training.')
-flags.DEFINE_string('test_labels_file', '/test-labels.csv', 'path to csv file for testing.')
+flags.DEFINE_integer('TEST_BATCH_SIZE', 50, 'the number of test images in a batch.')
+flags.DEFINE_float('TEST_DATASET_RATE', 0.9, '')
+# flags.DEFINE_string('train_labels_file', '/train-labels.csv', 'path to csv file for training.')
+# flags.DEFINE_string('test_labels_file', '/test-labels.csv', 'path to csv file for testing.')
+flags.DEFINE_string('all_labels_file', 'all_labels_file.csv', 'path to csv file for testing.')
 flags.DEFINE_string('dataset_path', 'D:/Dataset/Samples/', 'path to Dataset and csv.')
 flags.DEFINE_string('tensorboard_log_path', 'D:/Dataset/log/', 'path to Dataset and csv.')
 

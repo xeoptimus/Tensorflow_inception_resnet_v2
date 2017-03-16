@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
 encoding/batchreader.py=utf-8
+encoding/imlab2csv.py=utf-8
 encoding/settings.py=utf-8
 encoding/trainer.py=utf-8

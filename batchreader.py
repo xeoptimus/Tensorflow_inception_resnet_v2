@@ -25,23 +25,24 @@ def read_label_file(file):
     return filepaths, labels  
 
 # 读取路径与标签 
-train_filepaths, train_labels = read_label_file(FLAGS.dataset_path + FLAGS.train_labels_file)  
-test_filepaths, test_labels = read_label_file(FLAGS.dataset_path + FLAGS.test_labels_file)  
+all_filepaths, all_labels = read_label_file(FLAGS.dataset_path + FLAGS.all_labels_file)  
+# test_filepaths, test_labels = read_label_file(FLAGS.dataset_path + FLAGS.test_labels_file)  
 
 # 全路径
-train_filepaths = [FLAGS.dataset_path + fp for fp in train_filepaths]  
-test_filepaths = [FLAGS.dataset_path + fp for fp in test_filepaths]  
+all_filepaths = [fp for fp in all_filepaths]  
+# test_filepaths = [FLAGS.dataset_path + fp for fp in test_filepaths]  
 
 # 整合
-all_filepaths = train_filepaths + test_filepaths  
-all_labels = train_labels + test_labels  
+# all_filepaths = train_filepaths + test_filepaths  
+# all_labels = train_labels + test_labels  
 
 all_images = ops.convert_to_tensor(all_filepaths, dtype=dtypes.string)  
 all_labels = ops.convert_to_tensor(all_labels, dtype=dtypes.int32)  
 
 # 创建自定义随机分片 
 partitions = [0] * len(all_filepaths)  
-partitions[:FLAGS.TEST_BATCH_SIZE] = [1] * FLAGS.TEST_BATCH_SIZE  
+TEST_SET_SIZE=int(FLAGS.TEST_DATASET_RATE*len(all_filepaths))
+partitions[:TEST_SET_SIZE] = [1] * TEST_SET_SIZE 
 random.shuffle(partitions)  
 
 train_images, test_images = tf.dynamic_partition(all_images, partitions, 2)  
